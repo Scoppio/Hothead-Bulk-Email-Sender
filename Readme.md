@@ -1,6 +1,5 @@
+<h1><img src="http://i.imgur.com/zw0ebQm.png" alt="Hothead" height=100px width=100px/>Hothead Email Sender with Sparkpost</h1>
 
-# Hothead Email Sender with Sparkpost
-[![Hothead](http://i.imgur.com/zw0ebQm.png)]
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MDL5ECQGP38M6)
 
@@ -34,6 +33,6 @@ It is connected to sparkpost because it is the only one that allows for a good a
 ---
 
 ## Donation
-If this project help you save money or time to develop, you can buy me a cup of coffee :) 
+If this project help you save money or time to develop, **you can buy me a cup of coffee** :purple_heart:  
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MDL5ECQGP38M6)
