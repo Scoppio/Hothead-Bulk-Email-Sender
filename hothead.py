@@ -29,7 +29,7 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     bar = fill * filledLength + '-' * (length - filledLength)
     print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
     # Print New Line on Complete
-    if iteration == total: 
+    if iteration == total:
         print()
 
 def query_yes_no(question, default="no"):
@@ -71,7 +71,7 @@ def sparkpost(API):
 
 def transform_img_to_inline(html):
     # TODO: use beautifullsoup to look for all imgs and turn them into inline images
-        
+
     soup = BeautifulSoup(html, 'html.parser')
     soup.find_all('img')
     images = soup.find_all('img')
@@ -83,7 +83,7 @@ def transform_img_to_inline(html):
             if "https://" in src:
                 # "HTTPS found", src, "not substituting it"
                 continue
-            
+
             if src.rfind("/") == -1:
                 raise Exception("wrong format with image source! A source path was expected but found", src, "instead!")
 
@@ -141,7 +141,7 @@ def get_tags(data):
 
 def main():
 
-    parser = argparse.ArgumentParser(prog="Hothead Email Sender with SparkPost", 
+    parser = argparse.ArgumentParser(prog="Hothead Email Sender with SparkPost",
             usage="Loads an email template and send to people in a list, the list can be either a pre-formated CSV or recipment list from sparkpost",
             description=textwrap.dedent('''\
             How to properly use this script:
@@ -154,7 +154,7 @@ def main():
                  for the email along with
                  this script.
              '''),
-            epilog="Developed by @developerscoppio", 
+            epilog="Developed by @developerscoppio",
             formatter_class=argparse.RawDescriptionHelpFormatter,
         )
 
@@ -162,14 +162,15 @@ def main():
         help="just the path for the file and the filename WITHOUT the file extension")
     parser.add_argument('--B', type=str, default=None,
         help="just the path for the file and the filename WITHOUT the file extension")
-    parser.add_argument('--csv', nargs='?', type=str, default=None, 
+    parser.add_argument('--csv', nargs='?', type=str, default=None,
         help="csv file with email recipments")
-    parser.add_argument('--reply', type=str, default='reply_to@email.com', 
+    parser.add_argument('--reply', type=str, default='reply_to@email.com',
         help="reply account, must be a verified one!")
-    parser.add_argument('--from_email', type=str, default='John Doe <reply_to@email.com>', 
+    parser.add_argument('--from_email', type=str, default='John Doe <reply_to@email.com>',
         help="sending account, must be a verified one!")
-    parser.add_argument('--spark', type=str, 
-        help="name of the mailing list saved at sparkpost")
+    # Not implemented yet
+    # parser.add_argument('--spark', type=str,
+    #     help="name of the mailing list saved at sparkpost")
     parser.add_argument('--mode',  nargs='?' ,choices=['test', 'live', 'schedule'], const='live', default='test',
         help="mode in which the system will run")
     parser.add_argument('--format',  nargs='?' ,choices=['HTML', 'PLAIN_TEXT'], const='PLAIN_TEXT', default='HTML',
@@ -203,7 +204,7 @@ def main():
 
     A = {"subject" : None, "message" : None, "inline_images" : None, "text" : None, "tags" : None}
     B = {"subject" : None, "message" : None, "inline_images" : None, "text" : None, "tags" : None}
-    
+
     ANB = False
 
     template = args.A
@@ -219,7 +220,7 @@ def main():
             raise Exception(e)
 
     print("[ TXT TEMPLATE A ]: ", end="")
-    try:        
+    try:
         with open(template+'.txt') as f:
             text = f.readlines()
             print(template+".txt LOADED")
@@ -231,7 +232,7 @@ def main():
                     A["subject"].append(line[1:].strip())
                 else:
                     break
-            
+
             if len(A["subject"]) == 0:
                 print("SUBJECT NOT FOUND")
                 raise Exception("File does not contain the expected #subject line as first line")
@@ -258,7 +259,7 @@ def main():
                 raise Exception(e)
 
         print("[ TXT TEMPLATE B ]: ", end="")
-        try:        
+        try:
             with open(template+'.txt') as f:
                 text = f.readlines()
                 print(template+".txt LOADED")
@@ -269,7 +270,7 @@ def main():
                         B["subject"].append(line[1:].strip())
                     else:
                         break
-                
+
                 if len(B["subject"]) == 0:
                     print("SUBJECT NOT FOUND")
                     raise Exception("File does not contain the expected #subject line as first line")
@@ -284,9 +285,11 @@ def main():
     recipment_list = None
     print("[ EMAIL LIST ]: ", end="")
     try:
-        if args.spark:
-            print(args.spark, "- sparkpost email list loaded")
-        elif args.csv:
+        # TODO: implement sparkpost recipment list
+        # if args.spark:
+        #    print(args.spark, "- sparkpost email list loaded")
+        # elif args.csv:
+        if args.csv:
             recipment_list = pd.read_csv(args.csv)
             recipment_list.columns = [i.lower() for i in recipment_list.columns]
             print(args.csv, "LOADED")
@@ -309,10 +312,12 @@ def main():
     snt = 0;
     fail = 0;
     l = len(recipment_list)
-    # Initial call to print 0% progress   
+    # Initial call to print 0% progress
     print("")
     printProgressBar(tot, l, prefix = 'Progress:', suffix = 'Sent', length = 50)
 
+
+    # TODO: Verify if it can receive a full recipment list and work in a single "run"
     for i in range(len(recipment_list)):
         chosen = A
         temp = {}
@@ -321,28 +326,27 @@ def main():
 
         for tag in chosen["tags"]:
             temp[tag] =  recipment_list.iloc[i][tag.lower()]
-        
+
         email = recipment_list.iloc[i]["e-mail"]
 
         if args.mode == "live":
             resp = None
 
             try:
-
-                resp = transmit_email(from_email, reply_to, email, chosen["text"], chosen["message"], chosen["subject"], temp, format=args.format, 
+                resp = transmit_email(from_email, reply_to, email, chosen["text"], chosen["message"], chosen["subject"], temp, format=args.format,
                     inline_images=chosen["inline_images"])
                 snt += 1
             except Exception as e:
                 resp = {'total_accepted_recipients' : 0, 'id': 0 }
                 fail += 1
-            
+
             with open("output_log.txt", 'a') as f:
-                f.write(str(resp['total_accepted_recipients'])+','+str(resp['id']))       
+                f.write(str(resp['total_accepted_recipients'])+','+str(resp['id']))
 
             printProgressBar(tot, l, prefix = 'Progress:', suffix = 'Sent', length = 50)
 
             tot += resp['total_accepted_recipients']
-            
+
         else:
             tot += 1
             sleep(0.2)
