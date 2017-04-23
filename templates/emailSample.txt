@@ -1,0 +1,17 @@
+#Subject can be many
+#They are randonly selected
+#Betwen all the subjects that are in the text template with the hashtag mark at the beginning of the corpus of the message
+#They are removed later, but saved as subjects for the emails
+Hello {{name}} {{surname}},
+
+This is a sample email created for HotHead Email Bundle Sender, created by Scoppio, a developer that was upset with the lack of free and open software for sending emails to hundreds (or even thousands) of people.
+
+If you are using this code because others are too expensive, and you believe it is saving you money and is indeed saving you money, you could think of paying me a coffe at github.com/scoppio/hothead
+
+Have a lovely day
+
+#DareToDevelop
+
+Lucas Scoppio
+Senior Developer, Scoppio
+github.com/scoppio | www.scoppio.github.io
